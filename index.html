@@ -3,13 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cost Rate Rechner – Digitalagentur Österreich</title>
+<title>MONOBUNT Digitalagentur – Cost Rechner</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f0f; color: #e0e0e0; min-height: 100vh; padding: 32px 16px; }
-  h1 { text-align: center; font-size: 1.5rem; color: #fff; margin-bottom: 6px; }
-  .subtitle { text-align: center; font-size: 0.85rem; color: #888; margin-bottom: 32px; }
-  .container { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+  .header { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 32px; }
+  .header img { width: 72px; height: 72px; border-radius: 14px; display: block; }
+  .header h1 { font-size: 1.4rem; color: #fff; text-align: center; line-height: 1.3; }
+  .header h1 span { color: #B4006D; }
+  .subtitle { font-size: 0.82rem; color: #888; text-align: center; }
+
+  .container { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
   .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 24px; }
   .card h2 { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 20px; }
   .row { display: flex; gap: 16px; flex-wrap: wrap; }
@@ -20,18 +25,23 @@
     border-radius: 8px; color: #fff; font-size: 0.95rem; outline: none;
     transition: border-color 0.2s;
   }
-  input[type=number]:focus, select:focus { border-color: #B3006B; }
+  input[type=number]:focus, select:focus { border-color: #B4006D; }
   .range-wrap { display: flex; align-items: center; gap: 12px; }
-  input[type=range] { flex: 1; accent-color: #B3006B; cursor: pointer; }
-  .range-val { font-weight: 700; color: #B3006B; min-width: 36px; text-align: right; }
+  input[type=range] { flex: 1; accent-color: #B4006D; cursor: pointer; }
+  .range-val { font-weight: 700; color: #B4006D; min-width: 36px; text-align: right; }
   .hint { font-size: 0.75rem; color: #555; margin-top: 4px; }
 
-  .results { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
+  .results-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .results-4-responsive { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  @media (max-width: 600px) {
+    .results-4, .results-4-responsive { grid-template-columns: repeat(2, 1fr); }
+  }
+
   .result-box { background: #111; border: 1px solid #2a2a2a; border-radius: 10px; padding: 18px; text-align: center; }
-  .result-box.highlight { border-color: #B3006B; background: #1a0010; }
-  .result-box .val { font-size: 1.8rem; font-weight: 800; color: #B3006B; }
-  .result-box.secondary .val { font-size: 1.4rem; color: #aaa; }
-  .result-box .lbl { font-size: 0.75rem; color: #888; margin-top: 4px; }
+  .result-box.highlight { border-color: #B4006D; background: #1a0011; }
+  .result-box .val { font-size: 1.7rem; font-weight: 800; color: #B4006D; }
+  .result-box.secondary .val { font-size: 1.3rem; color: #aaa; }
+  .result-box .lbl { font-size: 0.73rem; color: #888; margin-top: 4px; }
 
   table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
   tr { border-bottom: 1px solid #222; }
@@ -49,19 +59,24 @@
   .faktor-box .flbl { font-size: 0.72rem; color: #888; margin-top: 3px; }
 
   .footer-note { font-size: 0.75rem; color: #555; text-align: center; margin-top: 12px; }
+  .pill { display: inline-block; background: #B4006D22; color: #B4006D; border: 1px solid #B4006D55;
+           border-radius: 20px; padding: 2px 10px; font-size: 0.75rem; font-weight: 600; margin-left: 8px; vertical-align: middle; }
 
-  .pill { display: inline-block; background: #B3006B22; color: #B3006B; border: 1px solid #B3006B55;
-          border-radius: 20px; padding: 2px 10px; font-size: 0.75rem; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+  .footer-bar { max-width: 960px; margin: 28px auto 0; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .footer-bar img { width: 24px; height: 24px; border-radius: 5px; opacity: 0.6; }
+  .footer-bar span { font-size: 0.72rem; color: #444; }
 </style>
 </head>
 <body>
 
-<h1>💶 Cost Rate Rechner</h1>
-<p class="subtitle">Digitalagentur · Österreich 2026 · Interner Stundensatz & Kundenstundensatz</p>
+<div class="header">
+  <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAEBAQEBAQEBAQEBAQEBAQIBAQEBAQIBAQECAgICAgICAgIDAwQDAwMDAwICAwQDAwQEBAQEAgMFBQQEBQQEBAT/2wBDAQEBAQEBAQIBAQIEAwIDBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAT/wAARCADhAOEDASIAAhEBAxEB/8QAHgABAAICAwEBAQAAAAAAAAAAAAoLAQkGBwgFAwT/xAA/EAABAwQBAQQFCgMHBQAAAAAAAQIDBAUGBwgRCQoSEyExOXi2FBoiOFhxdZa00zJBURUWIyRSgbVhkZKho//EAB0BAQACAgMBAQAAAAAAAAAAAAAHCAYJBAUKAwL/xABOEQABAwICBQMLEQQLAAAAAAABAAIDBBEFBgcIEiExE0FhCRQWGCJRcpKxstMXMjU2NzhTVHN0dYGRk7TR0lVxlMEkQkZSVmOhorPi8P/aAAwDAQACEQMRAD8A0HgAuAvUQgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAAiAAIgACIAbbOzo7H/efaM4VnWysGz7Xut8EwbLEwWW65ildcLhe7slFS3CeClpKaJytjggrqJz5ZXMRVqWtYj1bJ4OFiGI0WF0xq6+QMjBAub8Tw4XKxfOOdMrZAwKTM2caxtLQsLWukftEAvIa0ANDnEkng0E8TwBK1JglFfNb+Rf2ndK/lu+/tmHd1v5GI1yt5OaUVyIvhR2OX1rVX+SKvlnQ9nGVvjY8V/6VDPbcauh/tPF91U+gUXYHqLmFxC3Hwg3ffNEbsttvpslt1BBf7JerHVur8azO0Vb5o6O7Wyd7GPdBK+mqYlSRjJI5aWaN7GuYqHl0yWnqIKqFtTTODo3C4I4EKfMHxjC8w4VT45gk7ZqSdjZI5GG7XscLhwI5iPrHA70A/wDf3elTe7w37APlRy20ni++KrOtdaaxHPqNt5wK15rDcbllORWyT0091fS00Ksgpqlv+JTrJJ5ksatk8tsb43v4uI4rh2EQifEZQxhNgTfeegC5KxzPOkXJOjTCmY3nrEY6Ome8Rtc/aJc8gnZa1gc9xsCTZpsBc2C0RAlFfNb+Rf2ndK/lu+/tn4VPdcuSUcEz6Xkzo+adkTnQw1Fhv9NDK5E6ta+RsL1air63Ixyp/pX1HSdm+VuarHiv/SomGtxq6E27J4vuqn0Ki+A7A2xrHLtK7P2FqHPaKO35rrHNLlgeU0lPI6ekjrrVWTUVQ6CVWtWSF74XPil6Ikkb2OROjkOvzKY3slYJIzdpAIPfB4Kw9LVU9dSx1tG8PhkaHNcDcOa4AtcDzgggg95Adiar1HtDeObWnXGnsByvZWdXyRGW3GMPs017ukjfGxj55GxtVIYI1kYstTMrIYmr4pHsaiqbzNUd2w59Z3baO7Z5ftIaYjqqZJ5LHlOZVWU5VSOVU6RyxWqkqaJF6dVVW1junoTovp6dZiOOYThNhiFQ1hPMTv8AsFz/AKLBc7aV9G+jkNGd8ap6R7hdrJJByrh/ebE3akc3m2g0i+691HvBKGj7rhyPVv8Ai8m9Jsf19KNx2+ub/svln6fNb+Rf2ndK/lu+/tnU9nGVvjY8V/6VGXbcaug3dk8X3VT6FRdQSivmt/Iv7Tulfy3ff2x81v5F/ad0r+W77+2OzfK3xseK/wDSnbc6un+J4vuqn0Ci6g3gc6+ws5CcG9CXrkTfdp6u2Vg+KXa3WzLqPGmXGzX+ysutfT2uiqo4amJGVEa1dXSwvax6SN+UNejHMa9zNH53eG4pQYvAanDpA9gNri437jbeAecKXcj6QMm6ScGdmHI9eyro2vdGXsDhaRoa4sLXta4ENc02IG5wI3FAAdgsxQABEAARAAEQABEJz/dgfqP7r9626/CGFkGAnP8AdgPqP7r9626/CGFmB6R/ay/w2eUqnGvb732r+c0vnlSSQAV7Wj5aH+3z4Iu5U8UptxYJZn1+6eM8NXmlphoaZ1Rccqxh0aPyO0NY30yPjjghuUDej3K+3SxRtRapyrX7+v1FvLJGyVjo5WNkje1Wvje1Hsei+hUVF9Cp/wBFK3HtieC7+DHL7JrDjdufS6W222fZ+m5YqZILfaqKpqXtuGPxq1EYi2mpcsLI0VXpST29718UvVZh0aY8Nl+BVLuHdR3/ANzf5j61tQ6n/pkM9LVaF8cl7qPbqKG54sJ2qiAeC48uwDeQ6Y8GhdZ9mDwmunPDlxgGop6aqbrSyzsz3dd3gdJB8gxe3VEC1tLHOxUdHUXF8kFuge1VdHJX+b4XNheWZtotNssNqtljstBSWuz2aghtVqtlvp20lDbqanjbFBBDE1EayONjGtaxqIiI1EREQ0o9hDwYTiTxBtewM0sq2/dXJOGi2Tl7K2nWG641ZHRPfjNjkRzWvjdHTVMlbPE9rZI6m7TxP6+Qzpu+MSzzjxxnGHRROvBFdre8T/Wd9ZFh0AKseuJpkOlXSlLhuFS7WD4WX08Fjdr5LjriYd/be0MYRcGONjhYuKGHepfuMmHepfuMMbxCqU7gVWG9qR7RXmd7weRfrpDwUv8At96r0RD3r2pHtFeZvvB5F+ukPCdHC2prKSmerkZUVMdPIrF6PRr3o13Rf69FUtVg5tglKf8AKZ5gXpP0ZOtozy84/EaT8PGrHfsdeCGGcMOJGv7hPjNNT713Nids2FubJqyCOW/x1FfTNraPHkmTqrKa1RVLafyY3LG6oSqmTqsy9NtB/Ba4o4LZboYWNjhhoIYoo2J4WRtbG1GtRP5IiIiH95V+urJ6+skrKl13vJJJ/wDcBwHQvOvnPNWMZ4zVX5sx+UyVdVK6R5JJtc7mi/BjG2Yxo3Na0NAAAQHjrmDz04w8FMcxfIuRufSYsub189uw3H7RY6vKMpyV9I2J9bJTUNMxz0gpmzwLLUS+CJjqiFiv8csTH+ArZ3hjs2bxcrdaKDMtqy110robdRRO1Lco2ySzyNijarlXonVzmp1X0J1PvT4Ni1XD1zS0z3x7+6DSRu47wLbl3uAaJdKGasJbj2W8v1lTRO2rTRU8r43bJIdsvDS12yQQ6xNiCDvBW8IAHWqPFpy7fT2VXJL8Twf4+xgrpCxb7fT2VXJL8Twf4/xgrpCd9F/sFN8qfMYtzPU8/cTxH6Tn/C0aAAklXvQABEAARAAEQABEJz/dgPqP7r9626/CGFkGAnP92A+o/uv3rbr8IYWYHpH9rL/DZ5Sqca9vvfav5zS+eVJJABXtaPkOkt08btDcjKbFKPemqMJ2nSYNf0yfE6fMrJFeI7HXI1GrND409CPRrEfGvWORGMR7XeFvTs7Gcqx3M7S2+4teKG+Wh1wrbT8vt83nQNqrbXVNtr6dy+tJKeqpKqnkYvRWSU8jVRFaqH3z6NdLBJtMJa8d64I/mFzaWrxLBq4VNFLJBUxkgOY50cjDva4XBDmni0jceIPOsNajWo1qIjWp4WoidERE9SIhkHGbHmGOZLdcvs1ivFBdK/A7/HiuXU1HMss1huUtst15bRVCdOjZfkV3tlT4UVejK2Lr0Veh+A1zgSBw4ritjke1z2NJDRckAmwuBc94XIFzuuQOJC5MYd6l+4yYd6l+4N4hfN3AqsN7Uj2ivM33g8i/XSHglevRenr6ej7z3t2pHtFeZvvB5F+ukOqeJfDzfXNnalHqLQGI/wB4sgWnS53+9XKpW1YfhFvSRsclyvNwVrkggarkRrWNkmld9CGKWRUYtpsNqIKXAKaoqXhjGxRkuJsB3A516PskYxhWX9EOC43jlQyCjhw+lfJJI4MYxop47lziQAPKdw3qzy0TtLGN3aX1Tt7DbhFc8Y2Vr20ZpZquL6K+TcaGCpSORnXrHLGsjo5InfTjkjexyI5qona5qi7LjgHvngDrSq1hnnKen3LgNRPJdLLrKDXC2ew61ramR9RW/wBh3iSufVvhqZpZZZoZYWQukcskcEEklRJPtdKy4jFSw1skdFKJIrnZcARcc24gG/Mea/Alee7PWGZcwjNtfQZRxFtdhjZHchO1kke1GTdoc2Vkbg9os19gWFwJY5zSCoe/em8Nyya98Q8/gsd0qMJt1lyzF7lkVPSST2e1XGeosdTT0tTMieCKSoijldE16osqUs3h6+U7pFQ1vLGmxMBVXtaiZralVVXoif5+n/mW1ddb6C6U0lFc6GjuNHL082krqZlXTSdFRU8Ub0Vq9FRF9KfyOPpgOCoqKmF4kiovVFTHKNFT/wCZm+C5+dhGDswk0u3shw2tu3riTw2Twv31cbQ/rsDRdouotG9TlzrrrZszRM2q5LabLJJJvjNPJYtMhG59iADYXsuVt9Sf9jIRET0IiIn9E9AI7VDALCy05dvp7Krkl+J4P8f4wV0hYt9vp7Krkl+J4P8AH+MFdITvov8AYKb5U+Yxbmup5+4niP0nP+Fo0ABJKvegACIAAiAAIgACITn+7AfUf3X71t1+EMLIMBOf7sB9R/dfvW3X4QwswPSP7WX+GzylU417fe+1fzml88qSSACva0fKMb2RHOv+zedPOrgbsO8xR0F65RbN2XoCWtlaxWV0eWXabJMehVXeJyzRI67QRNb0b8juz3O6vY1ZORV2clNj5xqDtEOR20daZJcMQz7AuYecZRiWS2xWLWWitpMxu0sMqMe10cjeqeF8MrXxSsc9kjHsc5q72MX70ztmhx+1UmYcRNfZFk8FI2O9XvHtqXHErLc50T6ctPbZbfWSU7Hevy3VU3T/AFqSlmDI+IVj4MQwWIObJGwuFwLO2Rc90QLO6DxutkennVCzvm/FcNz3ooomTx1tLA6pi5WKFzKgRMDpRyro2lsw2XO2XF3Kh7nCzwVKn5fcl8N4g8cdrchM4dFLbNe4vNX2uzvqkpJspu03Sms9ogevpSStrJqaBHIi+BsjnqnhY5U1cd322bmW6eI26NvbEur75ney+YeZ5pll2e3y21dbX2vFppfLZ1VI4meJsUULfoxRRRxtRGsaiRVe0k7XTenaNQYpiOQ4vYNTagw25uyK3a3xe6VN9kvN1dCsDbheLlK2P5S+COSoZTsiggjibVzKrZHOR7ZNndofZ9ZV7y+S/wDCYocDEsszYDlJ09c0CoklbcXB2WgOsLjdcnebdHeWHZ71e8R0K6rddimb42Nx6urqXlA1zX8jAwv5OHbaS0uc4ukkLCWnuG3PJ3Uhkw71L9xkw71L9xHreIVDHcCqw3tSPaK8zfeDyL9dITI+73cdMf032feI7LZboGZzyMyC47Fyi6uiT5e6gpK2ps9hofM8KO8iOmo3VbI16o2S7VCov0yG52pHtFeZvvB5F+ukJ+vZWRMi7OThi2NvhavH/H5VTqq9XPpGvcvp/qrlX/cmHOtRLHk/DoGGzXtjv02jFh+65v8AUFtW1vcbrqDVcyVg9K8tiqhRCWx9c2KiL2tPfG3sv8JjTzL38AdHcnMiveIcbuQOWY1cJrTkOL6SyvI7FdaZytqbXW0NhuFVSVMaoqKjo5Yo3oqenq1CII2GSRsY5yB9q1a0FJJiFdBQREB0r2sBPAFzg0E25gTvXZNbm+F22qmobjl2M0FbTu8FRR1t9paWqgVURUR8bno5q9FReip6lQ/mTYmv1VEbnGIOVV6I1uSUaucv9ETzCpQr6yruldW3O51VRcblcaqSvuNwr531ldXzzPWSWeeZ6q+SR7nOc57lVXK5VVVVTlOuI412JgKKxioua2pFRWoqL/n6clt2i1rITI6t3gX9Z/2WzibqcUFPSPqJM3kua0kgUItcC5t/S+Ctt0Xr6QYb6k+4yRCtXY3gErTl2+nsquSX4ng/x/jBXSFi32+nsquSX4ng/wAf4wV0hO+i/wBgpvlT5jFua6nn7ieI/Sc/4WjQAEkq96AAIgACIAAiAAIhOf7sB9R/dfvW3X4QwsgwE5/uwH1H91+9bdfhDCzA9I/tZf4bPKVTjXt977V/OaXzypJIAK9rR8qrbm79dHl970ewfi27nmA9P83fro8vvej2D8W3c8wFs8N9jqfwGeaF6Zcne1HCvm0H/E1Cef3aH2fWVe8vkv8AwmKEDAnn92h9n1lXvL5L/wAJihhWkv2uj5Rvkcqm6/HuBv8AnlN5XqQyYd6l+4yYd6l+4gJvELSW7gVWG9qR7RXmb7weRfrpCff2UtXT1vZw8M5qaRssbNC2Okc5j2vRJKen8iVqqiqnVr43oqetFToqIvVCAh2pHtFeZvvB5F+ukJWndw+Y2M7Q4rz8Tb3d6Wm2hx4udwrbBZqifpXZFiN3r5LjBXweLosnyKvr66imazxJDG63q5yeexqTJnOjnnybh9TELtjbGXdALAL/AG2H1rbFraZXxTGtVfKGOYdGXx0LKF81hfZiko+S5Q9DZHRtPe27ncCpH58TJccsuYY7fsSyS3w3bHcostVjt/tVQ5zae50VbBJTVVO9WqjkbJFLIxfCqL0cvRUPtghsEg3HFaoGPfG8SRkhwIIINiCOBB5iFGIvvdduL9ZeblV4/wAi96WKy1NY+a2Wart1ivlRbIXKqtgdVrTxrL4OvhR7mI5UROvVeqrixd2D4/WG92e+03J3c8tTZbrT3animxmxeVI+mmZMxrujEXoqsRF6L16KSeAZH2YZm2OTNY+1rc35KwR1rNYQw9buzPOWW2d7ITcWtvJiud3Ek3PfRE6egAGNqvfBacu309lVyS/E8H+P8YK6QsW+309lVyS/E8H+P8YK6QnfRf7BTfKnzGLcz1PP3E8R+k5/wtGgAJJV70AARAAEQABEAARDfD2THbLWfs5tW7J07mek7ts7Gcz2Euy7PesZyuCwXm0Vs1st9qrKWognhfHLC+O10Ukb2OY5jvORySI9vl6HgddimFUWM0hoa9u1GSDuJG8cN4WFaQNHuVNJ+Wpco5zpzNQyOY8tD3xnaYdppDo3NcLHpsRcEEKaP86W0l9lDaf5/tP7B8+696Z1PHb6x9k4j7ErLs2lkW30102ZbLdbppvCvlNnnjo5XxsV3RHOZG9yJ1VGqvoWGQDGfU8yt8C7x3fmq/s1INXRrw44RKQOY1dTY9BtKD9hXOto7AvG2Nm7G2pkMNLT3/ZmeXjYN8goWqyhgrL1cai5VTIWr6UjSSpejUX1NREOCgGaRxshjbFGLNaAB+4bgrX01NBR00dJStDYmNDWtHANaLADoAACG/Hsou2nt3Z4aezbR+c6Vu20cWv2wJ9jY5esYymnx682WprKGgoK2jqIZoHsmhcltp5Y5Gva5jpJkVHo5vl6DgcDFcJosZpDRV7dqO4O4kG46QsO0g6O8o6UctyZTzrS8vRPcx+yHvjIew3a5r2Oa4EbxxsQSCCCpo/zpbSX2UNp/n+0/sH4VPel9NJTzLS8S9nTVPlO8iOfY1qpYXv6fRR8iUr1air63Ixyp/pX1EL8GNep5lf4F3ju/NV/7R/V058Jl/i6n0i7e5AbjvvIXeW3N6ZLRUlrvm29iXfYFfaaB/m0NmW6Vs1Wyihf4Wq9lOyRkLZHIjnpEjnfSVVOM612ZsDTmdYzs7VeYX7AtgYdcUuuNZbjNe623m0zeB8T/BI3+KOWKSWGWF6OjmimkjkY9j3NXg4MxbTwspxStaOTA2dnm2bWtbvW3K00OEYZBhDcBZA3rJsYhERAczkg3Y5MtdcFux3JBuCNxupPPH7vO/IfDLXRWXkRovAd1vp/LgkzLDb3NqbKatiJ0knraZKesoJ5nL6elNDRRoiIngT+I9j03emNNuiatXxK2bDOv8UdPse1VMSfc9aVir/4oQvwYpPkLK9RIZTT7JPM1zgPsBsPqVcMZ1NtXXGqx9dJgAhe7eRDPURMv0RslEbf3Ma0dCmj/OltJfZQ2n+f7T+wPnS2kvsobT/P9p/YIXAPj6nmVvgXeO7811HaP6uv7Jl/i6n0imj/ADpbSX2UNp/n+0/sD50tpL7KG0/z/af2CFwB6nmVvgXeO7807R/V1/ZMv8XU+kUkvtKe3pxjm5xayzjRgPHy/YHDn94s9XkuW5fmVPd5aCls12or1FDQUlPA1FlmqLfTMdJK/wALYvNRGOc5rmRtADI8JwagwSmNJhzC1hJcbkneQBxPQAp30baL8l6JcvvyxkWlMFI+V0zgZJJC6RzWNLi6Rzj61jG2BAAaN17kgAdopAQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARf/9k=" alt="MONOBUNT Logo">
+  <h1><span>MONOBUNT</span> Digitalagentur<br>Cost Rechner</h1>
+  <p class="subtitle">Österreich 2026 · Interner Stundensatz & Kundenstundensatz</p>
+</div>
 
 <div class="container">
 
-  <!-- MITARBEITER INPUT -->
   <div class="card">
     <h2>Mitarbeiter</h2>
     <div class="row">
@@ -76,7 +91,6 @@
     </div>
   </div>
 
-  <!-- ERWEITERTE EINSTELLUNGEN -->
   <div class="card">
     <h2>Erweiterte Einstellungen</h2>
     <div class="row">
@@ -115,10 +129,9 @@
     </div>
   </div>
 
-  <!-- COST RATE ERGEBNIS -->
   <div class="card">
     <h2>Cost Rate <span class="pill">Interner Stundensatz</span></h2>
-    <div class="results">
+    <div class="results-4">
       <div class="result-box highlight">
         <div class="val" id="res_costrate">–</div>
         <div class="lbl">Cost Rate (verrechenbar)</div>
@@ -151,7 +164,6 @@
     </table>
   </div>
 
-  <!-- KUNDENSTUNDENSATZ -->
   <div class="card">
     <h2>Kundenstundensatz <span class="pill">Verkaufspreis</span></h2>
     <p style="font-size:0.82rem;color:#888;margin-bottom:20px;">Definiere Overhead-Quote und Ziel-Marge – der Rechner ermittelt den empfohlenen Kundenstundensatz.</p>
@@ -177,7 +189,7 @@
 
     <hr class="divider">
 
-    <div class="results" style="margin-bottom:20px;">
+    <div class="results-4" style="margin-bottom:20px;">
       <div class="result-box highlight">
         <div class="val" id="res_verkauf">–</div>
         <div class="lbl">Empf. Kundenstundensatz</div>
@@ -230,15 +242,18 @@
 
 </div>
 
+<div class="footer-bar">
+  <img src="data:image/jpeg;base64,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Ne623m0zeB8T/BI3+KOWKSWGWF6OjmimkjkY9j3NXg4MxbTwspxStaOTA2dnm2bWtbvW3K00OEYZBhDcBZA3rJsYhERAczkg3Y5MtdcFux3JBuCNxupPPH7vO/IfDLXRWXkRovAd1vp/LgkzLDb3NqbKatiJ0knraZKesoJ5nL6elNDRRoiIngT+I9j03emNNuiatXxK2bDOv8UdPse1VMSfc9aVir/4oQvwYpPkLK9RIZTT7JPM1zgPsBsPqVcMZ1NtXXGqx9dJgAhe7eRDPURMv0RslEbf3Ma0dCmj/OltJfZQ2n+f7T+wPnS2kvsobT/P9p/YIXAPj6nmVvgXeO7811HaP6uv7Jl/i6n0imj/ADpbSX2UNp/n+0/sD50tpL7KG0/z/af2CFwB6nmVvgXeO7807R/V1/ZMv8XU+kUkvtKe3pxjm5xayzjRgPHy/YHDn94s9XkuW5fmVPd5aCls12or1FDQUlPA1FlmqLfTMdJK/wALYvNRGOc5rmRtADI8JwagwSmNJhzC1hJcbkneQBxPQAp30baL8l6JcvvyxkWlMFI+V0zgZJJC6RzWNLi6Rzj61jG2BAAaN17kgAdopAQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARAAEQABEAARf/9k=" alt="MONOBUNT">
+  <span>© 2026 MONOBUNT Digitalagentur · Österreich</span>
+</div>
+
 <script>
 function sync(sliderId, valId) {
   document.getElementById(valId).textContent = document.getElementById(sliderId).value;
 }
-
 function fmt(n, dezi=0) {
   return n.toLocaleString('de-AT', {minimumFractionDigits: dezi, maximumFractionDigits: dezi});
 }
-
 function berechne() {
   const brutto = parseFloat(document.getElementById('brutto').value) || 0;
   const wochenstd = parseFloat(document.getElementById('wochenstunden').value) || 40;
@@ -247,10 +262,7 @@ function berechne() {
   const nebenkosten = parseFloat(document.getElementById('nebenkosten').value) || 0;
   const dz = parseFloat(document.getElementById('bundesland').value);
 
-  // Bruttojahresgehalt (14 Monatsgehälter)
   const bruttoJahr = brutto * 14;
-
-  // LNK
   const sv = bruttoJahr * 0.2201;
   const db = bruttoJahr * 0.037;
   const kost = bruttoJahr * 0.03;
@@ -258,16 +270,13 @@ function berechne() {
   const lnkGesamt = sv + db + kost + restLnk;
   const vollkosten = bruttoJahr + lnkGesamt + nebenkosten;
 
-  // Stunden
   const std_pro_tag = wochenstd / 5;
   const arbeitstage = 260 - 13 - urlaubTage - 5 - 3;
   const sollStunden = arbeitstage * std_pro_tag;
   const effStunden = sollStunden * (1 - internPct);
-
   const costRate = vollkosten / effStunden;
   const costRateSoll = vollkosten / sollStunden;
 
-  // Cost Rate Outputs
   document.getElementById('res_costrate').textContent = fmt(costRate, 2) + ' €/h';
   document.getElementById('res_costrate_soll').textContent = fmt(costRateSoll, 2) + ' €/h';
   document.getElementById('res_effstunden').textContent = fmt(effStunden, 0) + ' h';
@@ -282,16 +291,13 @@ function berechne() {
   document.getElementById('tb_neben').textContent = fmt(nebenkosten, 0) + ' €';
   document.getElementById('tb_vk').textContent = fmt(vollkosten, 0) + ' €';
 
-  // Faktoren
   document.getElementById('fak15').textContent = fmt(costRate * 1.5, 0) + ' €/h';
   document.getElementById('fak20').textContent = fmt(costRate * 2.0, 0) + ' €/h';
   document.getElementById('fak25').textContent = fmt(costRate * 2.5, 0) + ' €/h';
   document.getElementById('fak30').textContent = fmt(costRate * 3.0, 0) + ' €/h';
 
-  // Kundenstundensatz
   const overheadPct = parseFloat(document.getElementById('overhead').value) / 100;
   const margePct = parseFloat(document.getElementById('marge').value) / 100;
-
   const overheadBetrag = costRate * overheadPct;
   const skp = costRate + overheadBetrag;
   const margeBetrag = skp * margePct;
@@ -309,7 +315,6 @@ function berechne() {
   document.getElementById('vk_marge_row').textContent = '+' + fmt(margeBetrag, 2) + ' €/h (' + document.getElementById('marge').value + ' %)';
   document.getElementById('vk_final').textContent = fmt(verkaufssatz, 2) + ' €/h';
 }
-
 berechne();
 </script>
 </body>
