@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cost Rate Rechner – Digitalagentur Österreich</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f0f; color: #e0e0e0; min-height: 100vh; padding: 32px 16px; }
+  h1 { text-align: center; font-size: 1.5rem; color: #fff; margin-bottom: 6px; }
+  .subtitle { text-align: center; font-size: 0.85rem; color: #888; margin-bottom: 32px; }
+  .container { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+  .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 24px; }
+  .card h2 { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 20px; }
+  .row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .field { flex: 1; min-width: 180px; }
+  label { display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 6px; }
+  input[type=number], select {
+    width: 100%; padding: 10px 14px; background: #111; border: 1px solid #333;
+    border-radius: 8px; color: #fff; font-size: 0.95rem; outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type=number]:focus, select:focus { border-color: #20b2aa; }
+  .range-wrap { display: flex; align-items: center; gap: 12px; }
+  input[type=range] { flex: 1; accent-color: #20b2aa; cursor: pointer; }
+  .range-val { font-weight: 700; color: #20b2aa; min-width: 36px; text-align: right; }
+
+  /* Results grid */
+  .results { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+  .result-box { background: #111; border: 1px solid #2a2a2a; border-radius: 10px; padding: 18px; text-align: center; }
+  .result-box.highlight { border-color: #20b2aa; background: #0d2523; }
+  .result-box .val { font-size: 1.8rem; font-weight: 800; color: #20b2aa; }
+  .result-box.secondary .val { font-size: 1.4rem; color: #aaa; }
+  .result-box .lbl { font-size: 0.75rem; color: #888; margin-top: 4px; }
+
+  /* Breakdown table */
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  tr { border-bottom: 1px solid #222; }
+  tr:last-child { border-bottom: none; }
+  td { padding: 9px 4px; }
+  td:last-child { text-align: right; color: #ccc; }
+  tr.total td { color: #fff; font-weight: 700; border-top: 1px solid #333; padding-top: 14px; }
+  tr.sub td:first-child { color: #888; padding-left: 16px; font-size: 0.82rem; }
+
+  /* Stundensatz Empfehlung */
+  .faktor-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+  .faktor-box { flex: 1; min-width: 120px; background: #111; border: 1px solid #2a2a2a; border-radius: 8px; padding: 14px; text-align: center; }
+  .faktor-box .fval { font-size: 1.3rem; font-weight: 700; color: #e0b050; }
+  .faktor-box .flbl { font-size: 0.72rem; color: #888; margin-top: 3px; }
+
+  .footer-note { font-size: 0.75rem; color: #555; text-align: center; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<h1>💶 Cost Rate Rechner</h1>
+<p class="subtitle">Digitalagentur · Österreich 2025 · Interner Stundensatz</p>
+
+<div class="container">
+
+  <!-- INPUTS -->
+  <div class="card">
+    <h2>Mitarbeiter</h2>
+    <div class="row">
+      <div class="field">
+        <label>Bruttomonatsgehalt (€)</label>
+        <input type="number" id="brutto" value="3000" min="500" max="20000" step="50" oninput="berechne()">
+      </div>
+      <div class="field">
+        <label>Wöchentliche Arbeitsstunden</label>
+        <input type="number" id="wochenstunden" value="40" min="10" max="60" step="1" oninput="berechne()">
+      </div>
+    </div>
+  </div>
+
+  <!-- ERWEITERTE EINSTELLUNGEN -->
+  <div class="card">
+    <h2>Erweiterte Einstellungen</h2>
+    <div class="row">
+      <div class="field">
+        <label>Urlaubstage / Jahr</label>
+        <div class="range-wrap">
+          <input type="range" id="urlaub" min="20" max="35" value="25" step="1" oninput="sync('urlaub','urlaub_v');berechne()">
+          <span class="range-val" id="urlaub_v">25</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Interne Zeit (Meetings etc.)</label>
+        <div class="range-wrap">
+          <input type="range" id="intern" min="0" max="50" value="25" step="5" oninput="sync('intern','intern_v');berechne()">
+          <span class="range-val" id="intern_v">25</span><span style="color:#888;font-size:0.8rem">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Arbeitsplatz/Nebenkosten (€/J)</label>
+        <input type="number" id="nebenkosten" value="3700" min="0" max="20000" step="100" oninput="berechne()">
+      </div>
+      <div class="field">
+        <label>Bundesland (DZ)</label>
+        <select id="bundesland" onchange="berechne()">
+          <option value="0.0031">Oberösterreich (0,31 %)</option>
+          <option value="0.0036">Wien (0,36 %)</option>
+          <option value="0.0036">Niederösterreich (0,36 %)</option>
+          <option value="0.0032">Salzburg (0,32 %)</option>
+          <option value="0.0030">Tirol (0,30 %)</option>
+          <option value="0.0030">Vorarlberg (0,30 %)</option>
+          <option value="0.0031">Steiermark (0,31 %)</option>
+          <option value="0.0030">Kärnten (0,30 %)</option>
+          <option value="0.0030">Burgenland (0,30 %)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ERGEBNIS -->
+  <div class="card">
+    <h2>Ergebnis</h2>
+    <div class="results">
+      <div class="result-box highlight">
+        <div class="val" id="res_costrate">–</div>
+        <div class="lbl">Cost Rate (verrechenbar)</div>
+      </div>
+      <div class="result-box secondary">
+        <div class="val" id="res_costrate_soll">–</div>
+        <div class="lbl">Cost Rate (Sollstunden)</div>
+      </div>
+      <div class="result-box secondary">
+        <div class="val" id="res_effstunden">–</div>
+        <div class="lbl">Eff. verrechenb. Std./Jahr</div>
+      </div>
+      <div class="result-box secondary">
+        <div class="val" id="res_vollkosten">–</div>
+        <div class="lbl">Vollkosten / Jahr</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KOSTENAUFSCHLÜSSELUNG -->
+  <div class="card">
+    <h2>Kostenaufschlüsselung</h2>
+    <table>
+      <tr><td>Bruttogehalt (inkl. 13./14. MG)</td><td id="tb_brutto">–</td></tr>
+      <tr class="sub"><td>SV-Dienstgeberanteil (22,01 %)</td><td id="tb_sv">–</td></tr>
+      <tr class="sub"><td>FLAF/DB (3,70 %)</td><td id="tb_db">–</td></tr>
+      <tr class="sub"><td>Kommunalsteuer (3,00 %)</td><td id="tb_kost">–</td></tr>
+      <tr class="sub"><td>DZ + WBF</td><td id="tb_rest">–</td></tr>
+      <tr><td>LNK gesamt</td><td id="tb_lnk">–</td></tr>
+      <tr><td>Arbeitsplatz &amp; Nebenkosten</td><td id="tb_neben">–</td></tr>
+      <tr class="total"><td>Vollkosten gesamt</td><td id="tb_vk">–</td></tr>
+    </table>
+  </div>
+
+  <!-- STUNDENSATZ EMPFEHLUNG -->
+  <div class="card">
+    <h2>Empfohlene Verkaufsstundensätze</h2>
+    <p style="font-size:0.82rem;color:#888;margin-bottom:12px;">Typische Aufschlag-Faktoren für Digitalagenturen im DACH-Raum</p>
+    <div class="faktor-row">
+      <div class="faktor-box">
+        <div class="fval" id="fak15">–</div>
+        <div class="flbl">Faktor 1,5× (Minimum)</div>
+      </div>
+      <div class="faktor-box">
+        <div class="fval" id="fak20">–</div>
+        <div class="flbl">Faktor 2,0× (Standard)</div>
+      </div>
+      <div class="faktor-box">
+        <div class="fval" id="fak25">–</div>
+        <div class="flbl">Faktor 2,5× (Premium)</div>
+      </div>
+      <div class="faktor-box">
+        <div class="fval" id="fak30">–</div>
+        <div class="flbl">Faktor 3,0× (Senior)</div>
+      </div>
+    </div>
+    <p class="footer-note">Basierend auf effektiver Cost Rate. Faktoren decken Overhead, Marge und nicht-verrechenbare Zeit ab.</p>
+  </div>
+
+</div>
+
+<script>
+function sync(sliderId, valId) {
+  document.getElementById(valId).textContent = document.getElementById(sliderId).value;
+}
+
+function fmt(n, dezi=0) {
+  return n.toLocaleString('de-AT', {minimumFractionDigits: dezi, maximumFractionDigits: dezi});
+}
+
+function berechne() {
+  const brutto = parseFloat(document.getElementById('brutto').value) || 0;
+  const wochenstd = parseFloat(document.getElementById('wochenstunden').value) || 40;
+  const urlaubTage = parseFloat(document.getElementById('urlaub').value) || 25;
+  const internPct = parseFloat(document.getElementById('intern').value) / 100;
+  const nebenkosten = parseFloat(document.getElementById('nebenkosten').value) || 0;
+  const dz = parseFloat(document.getElementById('bundesland').value);
+
+  // Bruttojahresgehalt (14 Monatsgehälter)
+  const bruttoJahr = brutto * 14;
+
+  // LNK
+  const sv = bruttoJahr * 0.2201;
+  const db = bruttoJahr * 0.037;
+  const kost = bruttoJahr * 0.03;
+  const restLnk = bruttoJahr * (dz + 0.005); // DZ + WBF 0,5%
+  const lnkGesamt = sv + db + kost + restLnk;
+
+  const vollkosten = bruttoJahr + lnkGesamt + nebenkosten;
+
+  // Stunden
+  const tagespro_woche = wochenstd / 8;  // Tagäquivalent (falls keine 8h-Tage)
+  const std_pro_tag = wochenstd / 5;
+  const arbeitstage = 260 - 13 - urlaubTage - 5 - 3; // Gesamt - Feiertage - Urlaub - KS - Sonstiges
+  const sollStunden = arbeitstage * std_pro_tag;
+  const effStunden = sollStunden * (1 - internPct);
+
+  const costRate = vollkosten / effStunden;
+  const costRateSoll = vollkosten / sollStunden;
+
+  // Results
+  document.getElementById('res_costrate').textContent = fmt(costRate, 2) + ' €/h';
+  document.getElementById('res_costrate_soll').textContent = fmt(costRateSoll, 2) + ' €/h';
+  document.getElementById('res_effstunden').textContent = fmt(effStunden, 0) + ' h';
+  document.getElementById('res_vollkosten').textContent = fmt(vollkosten, 0) + ' €';
+
+  // Tabelle
+  document.getElementById('tb_brutto').textContent = fmt(bruttoJahr, 0) + ' €';
+  document.getElementById('tb_sv').textContent = fmt(sv, 0) + ' €';
+  document.getElementById('tb_db').textContent = fmt(db, 0) + ' €';
+  document.getElementById('tb_kost').textContent = fmt(kost, 0) + ' €';
+  document.getElementById('tb_rest').textContent = fmt(restLnk, 0) + ' €';
+  document.getElementById('tb_lnk').textContent = fmt(lnkGesamt, 0) + ' €';
+  document.getElementById('tb_neben').textContent = fmt(nebenkosten, 0) + ' €';
+  document.getElementById('tb_vk').textContent = fmt(vollkosten, 0) + ' €';
+
+  // Verkaufsstundensätze
+  document.getElementById('fak15').textContent = fmt(costRate * 1.5, 0) + ' €/h';
+  document.getElementById('fak20').textContent = fmt(costRate * 2.0, 0) + ' €/h';
+  document.getElementById('fak25').textContent = fmt(costRate * 2.5, 0) + ' €/h';
+  document.getElementById('fak30').textContent = fmt(costRate * 3.0, 0) + ' €/h';
+}
+
+// Init
+berechne();
+</script>
+</body>
+</html>
