@@ -20,20 +20,19 @@
     border-radius: 8px; color: #fff; font-size: 0.95rem; outline: none;
     transition: border-color 0.2s;
   }
-  input[type=number]:focus, select:focus { border-color: #20b2aa; }
+  input[type=number]:focus, select:focus { border-color: #B3006B; }
   .range-wrap { display: flex; align-items: center; gap: 12px; }
-  input[type=range] { flex: 1; accent-color: #20b2aa; cursor: pointer; }
-  .range-val { font-weight: 700; color: #20b2aa; min-width: 36px; text-align: right; }
+  input[type=range] { flex: 1; accent-color: #B3006B; cursor: pointer; }
+  .range-val { font-weight: 700; color: #B3006B; min-width: 36px; text-align: right; }
+  .hint { font-size: 0.75rem; color: #555; margin-top: 4px; }
 
-  /* Results grid */
-  .results { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+  .results { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
   .result-box { background: #111; border: 1px solid #2a2a2a; border-radius: 10px; padding: 18px; text-align: center; }
-  .result-box.highlight { border-color: #20b2aa; background: #0d2523; }
-  .result-box .val { font-size: 1.8rem; font-weight: 800; color: #20b2aa; }
+  .result-box.highlight { border-color: #B3006B; background: #1a0010; }
+  .result-box .val { font-size: 1.8rem; font-weight: 800; color: #B3006B; }
   .result-box.secondary .val { font-size: 1.4rem; color: #aaa; }
   .result-box .lbl { font-size: 0.75rem; color: #888; margin-top: 4px; }
 
-  /* Breakdown table */
   table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
   tr { border-bottom: 1px solid #222; }
   tr:last-child { border-bottom: none; }
@@ -42,23 +41,27 @@
   tr.total td { color: #fff; font-weight: 700; border-top: 1px solid #333; padding-top: 14px; }
   tr.sub td:first-child { color: #888; padding-left: 16px; font-size: 0.82rem; }
 
-  /* Stundensatz Empfehlung */
-  .faktor-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+  .divider { border: none; border-top: 1px solid #2a2a2a; margin: 20px 0; }
+
+  .faktor-row { display: flex; gap: 12px; flex-wrap: wrap; }
   .faktor-box { flex: 1; min-width: 120px; background: #111; border: 1px solid #2a2a2a; border-radius: 8px; padding: 14px; text-align: center; }
-  .faktor-box .fval { font-size: 1.3rem; font-weight: 700; color: #e0b050; }
+  .faktor-box .fval { font-size: 1.2rem; font-weight: 700; color: #e0b050; }
   .faktor-box .flbl { font-size: 0.72rem; color: #888; margin-top: 3px; }
 
-  .footer-note { font-size: 0.75rem; color: #555; text-align: center; margin-top: 8px; }
+  .footer-note { font-size: 0.75rem; color: #555; text-align: center; margin-top: 12px; }
+
+  .pill { display: inline-block; background: #B3006B22; color: #B3006B; border: 1px solid #B3006B55;
+          border-radius: 20px; padding: 2px 10px; font-size: 0.75rem; font-weight: 600; margin-left: 8px; vertical-align: middle; }
 </style>
 </head>
 <body>
 
 <h1>💶 Cost Rate Rechner</h1>
-<p class="subtitle">Digitalagentur · Österreich 2025 · Interner Stundensatz</p>
+<p class="subtitle">Digitalagentur · Österreich 2026 · Interner Stundensatz & Kundenstundensatz</p>
 
 <div class="container">
 
-  <!-- INPUTS -->
+  <!-- MITARBEITER INPUT -->
   <div class="card">
     <h2>Mitarbeiter</h2>
     <div class="row">
@@ -88,7 +91,7 @@
         <label>Interne Zeit (Meetings etc.)</label>
         <div class="range-wrap">
           <input type="range" id="intern" min="0" max="50" value="25" step="5" oninput="sync('intern','intern_v');berechne()">
-          <span class="range-val" id="intern_v">25</span><span style="color:#888;font-size:0.8rem">%</span>
+          <span class="range-val" id="intern_v">25</span><span style="color:#888;font-size:0.8rem"> %</span>
         </div>
       </div>
       <div class="field">
@@ -112,9 +115,9 @@
     </div>
   </div>
 
-  <!-- ERGEBNIS -->
+  <!-- COST RATE ERGEBNIS -->
   <div class="card">
-    <h2>Ergebnis</h2>
+    <h2>Cost Rate <span class="pill">Interner Stundensatz</span></h2>
     <div class="results">
       <div class="result-box highlight">
         <div class="val" id="res_costrate">–</div>
@@ -133,11 +136,9 @@
         <div class="lbl">Vollkosten / Jahr</div>
       </div>
     </div>
-  </div>
 
-  <!-- KOSTENAUFSCHLÜSSELUNG -->
-  <div class="card">
-    <h2>Kostenaufschlüsselung</h2>
+    <hr class="divider">
+
     <table>
       <tr><td>Bruttogehalt (inkl. 13./14. MG)</td><td id="tb_brutto">–</td></tr>
       <tr class="sub"><td>SV-Dienstgeberanteil (22,01 %)</td><td id="tb_sv">–</td></tr>
@@ -150,14 +151,66 @@
     </table>
   </div>
 
-  <!-- STUNDENSATZ EMPFEHLUNG -->
+  <!-- KUNDENSTUNDENSATZ -->
   <div class="card">
-    <h2>Empfohlene Verkaufsstundensätze</h2>
-    <p style="font-size:0.82rem;color:#888;margin-bottom:12px;">Typische Aufschlag-Faktoren für Digitalagenturen im DACH-Raum</p>
+    <h2>Kundenstundensatz <span class="pill">Verkaufspreis</span></h2>
+    <p style="font-size:0.82rem;color:#888;margin-bottom:20px;">Definiere Overhead-Quote und Ziel-Marge – der Rechner ermittelt den empfohlenen Kundenstundensatz.</p>
+
+    <div class="row">
+      <div class="field">
+        <label>Overhead-Quote (% auf Cost Rate)</label>
+        <div class="range-wrap">
+          <input type="range" id="overhead" min="0" max="60" value="20" step="5" oninput="sync('overhead','overhead_v');berechne()">
+          <span class="range-val" id="overhead_v">20</span><span style="color:#888;font-size:0.8rem"> %</span>
+        </div>
+        <div class="hint">Fixkosten, nicht-verrechenbare MA, Geschäftsführung, Vertrieb etc.</div>
+      </div>
+      <div class="field">
+        <label>Ziel-Marge (% auf Selbstkostenpreis)</label>
+        <div class="range-wrap">
+          <input type="range" id="marge" min="0" max="60" value="20" step="5" oninput="sync('marge','marge_v');berechne()">
+          <span class="range-val" id="marge_v">20</span><span style="color:#888;font-size:0.8rem"> %</span>
+        </div>
+        <div class="hint">Gewinnmarge nach allen Kosten (EBIT-Ziel der Agentur).</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="results" style="margin-bottom:20px;">
+      <div class="result-box highlight">
+        <div class="val" id="res_verkauf">–</div>
+        <div class="lbl">Empf. Kundenstundensatz</div>
+      </div>
+      <div class="result-box secondary">
+        <div class="val" id="res_overhead_betrag">–</div>
+        <div class="lbl">Overhead / h</div>
+      </div>
+      <div class="result-box secondary">
+        <div class="val" id="res_marge_betrag">–</div>
+        <div class="lbl">Marge / h</div>
+      </div>
+      <div class="result-box secondary">
+        <div class="val" id="res_deckungsbeitrag">–</div>
+        <div class="lbl">DB / Jahr (Vollauslastung)</div>
+      </div>
+    </div>
+
+    <table>
+      <tr><td>Cost Rate (Basis)</td><td id="vk_costrate">–</td></tr>
+      <tr class="sub"><td>+ Overhead-Aufschlag</td><td id="vk_overhead">–</td></tr>
+      <tr><td>Selbstkostenpreis / h</td><td id="vk_skp">–</td></tr>
+      <tr class="sub"><td>+ Ziel-Marge</td><td id="vk_marge_row">–</td></tr>
+      <tr class="total"><td>Verkaufsstundensatz</td><td id="vk_final">–</td></tr>
+    </table>
+
+    <hr class="divider">
+
+    <p style="font-size:0.8rem;color:#888;margin-bottom:12px;">Schnellvergleich: Marktübliche Faktoren DACH-Digitalagenturen</p>
     <div class="faktor-row">
       <div class="faktor-box">
         <div class="fval" id="fak15">–</div>
-        <div class="flbl">Faktor 1,5× (Minimum)</div>
+        <div class="flbl">Faktor 1,5× (Junior)</div>
       </div>
       <div class="faktor-box">
         <div class="fval" id="fak20">–</div>
@@ -165,14 +218,14 @@
       </div>
       <div class="faktor-box">
         <div class="fval" id="fak25">–</div>
-        <div class="flbl">Faktor 2,5× (Premium)</div>
+        <div class="flbl">Faktor 2,5× (Senior)</div>
       </div>
       <div class="faktor-box">
         <div class="fval" id="fak30">–</div>
-        <div class="flbl">Faktor 3,0× (Senior)</div>
+        <div class="flbl">Faktor 3,0× (Expert)</div>
       </div>
     </div>
-    <p class="footer-note">Basierend auf effektiver Cost Rate. Faktoren decken Overhead, Marge und nicht-verrechenbare Zeit ab.</p>
+    <p class="footer-note">Marktübliche Agenturstundensätze im DACH-Raum: 90–180 €/h · Empfohlener Satz basiert auf Cost Rate + Overhead + Ziel-Marge</p>
   </div>
 
 </div>
@@ -201,28 +254,25 @@ function berechne() {
   const sv = bruttoJahr * 0.2201;
   const db = bruttoJahr * 0.037;
   const kost = bruttoJahr * 0.03;
-  const restLnk = bruttoJahr * (dz + 0.005); // DZ + WBF 0,5%
+  const restLnk = bruttoJahr * (dz + 0.005);
   const lnkGesamt = sv + db + kost + restLnk;
-
   const vollkosten = bruttoJahr + lnkGesamt + nebenkosten;
 
   // Stunden
-  const tagespro_woche = wochenstd / 8;  // Tagäquivalent (falls keine 8h-Tage)
   const std_pro_tag = wochenstd / 5;
-  const arbeitstage = 260 - 13 - urlaubTage - 5 - 3; // Gesamt - Feiertage - Urlaub - KS - Sonstiges
+  const arbeitstage = 260 - 13 - urlaubTage - 5 - 3;
   const sollStunden = arbeitstage * std_pro_tag;
   const effStunden = sollStunden * (1 - internPct);
 
   const costRate = vollkosten / effStunden;
   const costRateSoll = vollkosten / sollStunden;
 
-  // Results
+  // Cost Rate Outputs
   document.getElementById('res_costrate').textContent = fmt(costRate, 2) + ' €/h';
   document.getElementById('res_costrate_soll').textContent = fmt(costRateSoll, 2) + ' €/h';
   document.getElementById('res_effstunden').textContent = fmt(effStunden, 0) + ' h';
   document.getElementById('res_vollkosten').textContent = fmt(vollkosten, 0) + ' €';
 
-  // Tabelle
   document.getElementById('tb_brutto').textContent = fmt(bruttoJahr, 0) + ' €';
   document.getElementById('tb_sv').textContent = fmt(sv, 0) + ' €';
   document.getElementById('tb_db').textContent = fmt(db, 0) + ' €';
@@ -232,14 +282,34 @@ function berechne() {
   document.getElementById('tb_neben').textContent = fmt(nebenkosten, 0) + ' €';
   document.getElementById('tb_vk').textContent = fmt(vollkosten, 0) + ' €';
 
-  // Verkaufsstundensätze
+  // Faktoren
   document.getElementById('fak15').textContent = fmt(costRate * 1.5, 0) + ' €/h';
   document.getElementById('fak20').textContent = fmt(costRate * 2.0, 0) + ' €/h';
   document.getElementById('fak25').textContent = fmt(costRate * 2.5, 0) + ' €/h';
   document.getElementById('fak30').textContent = fmt(costRate * 3.0, 0) + ' €/h';
+
+  // Kundenstundensatz
+  const overheadPct = parseFloat(document.getElementById('overhead').value) / 100;
+  const margePct = parseFloat(document.getElementById('marge').value) / 100;
+
+  const overheadBetrag = costRate * overheadPct;
+  const skp = costRate + overheadBetrag;
+  const margeBetrag = skp * margePct;
+  const verkaufssatz = skp + margeBetrag;
+  const deckungsbeitrag = (verkaufssatz - costRate) * effStunden;
+
+  document.getElementById('res_verkauf').textContent = fmt(verkaufssatz, 2) + ' €/h';
+  document.getElementById('res_overhead_betrag').textContent = fmt(overheadBetrag, 2) + ' €/h';
+  document.getElementById('res_marge_betrag').textContent = fmt(margeBetrag, 2) + ' €/h';
+  document.getElementById('res_deckungsbeitrag').textContent = fmt(deckungsbeitrag, 0) + ' €';
+
+  document.getElementById('vk_costrate').textContent = fmt(costRate, 2) + ' €/h';
+  document.getElementById('vk_overhead').textContent = '+' + fmt(overheadBetrag, 2) + ' €/h (' + document.getElementById('overhead').value + ' %)';
+  document.getElementById('vk_skp').textContent = fmt(skp, 2) + ' €/h';
+  document.getElementById('vk_marge_row').textContent = '+' + fmt(margeBetrag, 2) + ' €/h (' + document.getElementById('marge').value + ' %)';
+  document.getElementById('vk_final').textContent = fmt(verkaufssatz, 2) + ' €/h';
 }
 
-// Init
 berechne();
 </script>
 </body>
